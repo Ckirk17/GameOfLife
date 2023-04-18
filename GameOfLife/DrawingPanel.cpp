@@ -2,12 +2,16 @@
 #include "wx/graphics.h"
 #include "wx/dcbuffer.h"
 
-DrawingPanel::DrawingPanel(wxFrame* parent, std::vector<std::vector<bool>>& gameBoard) : wxPanel(parent, wxID_ANY, wxPoint(0,0), wxSize(0,0)){
+wxBEGIN_EVENT_TABLE(DrawingPanel, wxPanel)
+EVT_PAINT(DrawingPanel::OnPaint)
+EVT_LEFT_UP(DrawingPanel::MouseButtonClick)
+wxEND_EVENT_TABLE()
+
+DrawingPanel::DrawingPanel(wxWindow* parent, std::vector<std::vector<bool>>& gameBoard) : wxPanel(parent, wxID_ANY, wxPoint(0,0), wxSize(0,0)),RefGameBoard(gameBoard){
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
 	SetDoubleBuffered(true);
 	this->Bind(wxEVT_PAINT, &DrawingPanel::OnPaint, this);
 	this->Bind(wxEVT_LEFT_UP, &DrawingPanel::MouseButtonClick, this);
-	std::vector<std::vector<bool>>& gameBoard = {false, false};
 }
 
 void DrawingPanel::OnPaint(wxPaintEvent&) {
@@ -18,31 +22,33 @@ void DrawingPanel::OnPaint(wxPaintEvent&) {
 	if (!context) { return; }
 
 	context->SetPen(*wxBLACK);
-	context->SetBrush(*wxWHITE);
+	context->SetBrush(*wxWHITE); \
+	context->DrawRectangle(50, 50, 100, 100);
 
-	int startPtX = 0;
-	int startPtY = 0;
-	int cellHt;
-	int cellWidth;
+	int panelHeight;
+	int panelWidth;
 
-	wxSize size = GetSize();
-	int varW = size.GetWidth() / gridSize;
-	int varH = size.GetHeight() / gridSize;
+	GetSize(&panelWidth, &panelHeight);
 
-	for (int i = 0; i < gridSize; i++) {
-		for (int x = 0; x < gridSize; x++) {
+	int cellHt = panelHeight / gridSize;
+	int cellWidth = panelWidth / gridSize;
 
-			context->DrawRectangle(startPtX, startPtY, 20, 20);
+	int rows = RefGameBoard.size();
+	int columns = RefGameBoard[0].size();
 
-			startPtX += 20;
-			startPtY += 20;
+	for (int i = 0; i < rows; i++) {
+		for (int x = 0; x < columns; x++) {
 
-			if (gameBoard[i][x] == true) {
+			int X = i + cellWidth;
+			int Y = x + cellHt;
+
+			if (RefGameBoard[i][x] == true) {
 				context->SetBrush(*wxLIGHT_GREY);
 			}
 			else {
 				context->SetBrush(*wxWHITE);
 			}
+			context->DrawRectangle(X, Y, 20, 20);
 		}
 	}
 }
@@ -67,7 +73,7 @@ void DrawingPanel::MouseButtonClick(wxMouseEvent& event){
 	int boardVal1 = x / size.GetWidth();
 	int boardVal2 = y / size.GetHeight();
 
-	gameBoard[boardVal1][boardVal2];
+	RefGameBoard[boardVal1][boardVal2];
 
 	Refresh();
 }

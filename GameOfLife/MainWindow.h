@@ -1,15 +1,7 @@
 #pragma once
 #include <wx/wx.h>
 #include "DrawingPanel.h"
-
-wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
-	EVT_SIZE(MainWindow::WindowResize)
-	EVT_MENU(12000, MainWindow::PlayButtonClick)
-	EVT_MENU(13000, MainWindow::PauseButtonClick)
-	EVT_MENU(14000, MainWindow::NextButtonClick)
-	EVT_MENU(15000, MainWindow::TrashButtonClick)
-	EVT_TIMER(12500, MainWindow::Timer)
-wxEND_EVENT_TABLE()
+#include <vector>
 
 class MainWindow:public wxFrame {
 private:

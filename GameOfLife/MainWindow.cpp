@@ -7,6 +7,15 @@
 #include "next.xpm"
 #include "trash.xpm"
 
+wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
+EVT_SIZE(MainWindow::WindowResize)
+EVT_MENU(12000, MainWindow::PlayButtonClick)
+EVT_MENU(13000, MainWindow::PauseButtonClick)
+EVT_MENU(14000, MainWindow::NextButtonClick)
+EVT_MENU(15000, MainWindow::TrashButtonClick)
+EVT_TIMER(12500, MainWindow::Timer)
+wxEND_EVENT_TABLE()
+
 MainWindow::MainWindow() :wxFrame(nullptr, wxID_ANY, "Game of Life", wxPoint(100,100), wxSize(500,500)) {
 	statusBar = CreateStatusBar();
 	toolBar = CreateToolBar();
@@ -31,7 +40,7 @@ MainWindow::MainWindow() :wxFrame(nullptr, wxID_ANY, "Game of Life", wxPoint(100
 
 	toolBar->Realize();
 	
-	drPanel = new DrawingPanel(this, gameBoard, wxSize(100, 100));
+	drPanel = new DrawingPanel(this, gameBoard);
 	boxSizer = new wxBoxSizer(wxVERTICAL);
 
 	boxSizer->Add(drPanel, 1, wxEXPAND, wxALL);
@@ -69,9 +78,11 @@ void MainWindow::WindowResize(wxSizeEvent& event) {
 }
 
 void MainWindow::InitGrid() {
+	gameBoard.resize(gridSize);
+
 	for (int i = 0; i < gridSize; i++) {
 		for (int x = 0; x < gridSize; x++) {
-			gameBoard.resize(gridSize);
+			gameBoard[i][x] = false;
 		}
 	}
 	drPanel->SetGridSize(gridSize);
@@ -100,10 +111,16 @@ void MainWindow::TrashButtonClick(wxCommandEvent& event){
 
 
 int MainWindow::NeighborCount(int row, int column){
-	for (int i = -1; i < 2; i++) {
-		for (int c = -1; c < 2; c++) {
-			if (i == 0 && c == 0) {
+	int counter = 0;
+
+	for (int i = row - 1; i < row + 1; i++) {
+		for (int c = column - 1; c < column + 1; c++) {
+			if (i == row && c == column) {
 				continue;
+			}
+			if (i >= 0 && i < gridSize && c >= 0 && c < gridSize && gameBoard[i][c])
+			{
+				counter++;
 			}
 		}
 	}
