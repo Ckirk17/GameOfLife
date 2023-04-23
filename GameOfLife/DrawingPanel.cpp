@@ -30,8 +30,8 @@ void DrawingPanel::OnPaint(wxPaintEvent&) {
 
 	GetSize(&panelWidth, &panelHeight);
 
-	int cellHt = panelHeight / gridSize;
-	int cellWidth = panelWidth / gridSize;
+	int cellHt = panelHeight / settingsRef->gridSize;
+	int cellWidth = panelWidth / settingsRef->gridSize;
 
 	int rows = RefGameBoard.size();
 	int columns = RefGameBoard[0].size();
@@ -48,7 +48,7 @@ void DrawingPanel::OnPaint(wxPaintEvent&) {
 			else {
 				context->SetBrush(*wxWHITE);
 			}
-			context->DrawRectangle(X, Y, 20, 20);
+			context->DrawRectangle(X, Y, 20, 20);  
 		}
 	}
 }
@@ -76,6 +76,10 @@ void DrawingPanel::MouseButtonClick(wxMouseEvent& event){
 	RefGameBoard[boardVal1][boardVal2];
 
 	Refresh();
+}
+
+void DrawingPanel::SetSetting(GameSettings* settings) {
+	settingsRef = settings;
 }
 
 DrawingPanel::~DrawingPanel(){
